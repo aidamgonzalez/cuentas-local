@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cuentas del Local</title>
+<meta name="description" content="Aportes, gastos, facturas y reparto del alquiler del local.">
+<meta name="theme-color" content="#2A4F7C">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cuentas Local">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  /* beige cálido · azul · blanco */
+  --bg:#F4EDE2; --surface:#FFFFFF; --sunk:#F8F3EB; --tint:#EBE0CF; --ink:#1F2B45; --muted:#7A6F5F; --line:#E6DAC7;
+  --accent:#2F5E93; --accent-soft:#E3ECF6; --accent-ink:#FFFFFF;
+  --hero:#2A4F7C; --hero-ink:#FFFFFF; --hero-muted:#C9D8EA;
+  --s1:#2F5E93; --s2:#C4904F; --s3:#7FA3CC; --s4:#9C6B4A;
+  --good:#3C7A55; --warn:#B07428; --bad:#B4483C;
+  --radius:14px; --shadow:0 1px 2px rgba(60,45,20,.05),0 6px 18px -10px rgba(60,45,20,.18);
+  --display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
+  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#1B1915; --surface:#25221D; --sunk:#2B2822; --tint:#342F27; --ink:#F3ECE0; --muted:#B3A792; --line:#3A342B;
+    --accent:#8DB2DE; --accent-soft:#233246; --accent-ink:#13202F;
+    --hero:#1F3553; --hero-ink:#F3ECE0; --hero-muted:#A9BFD9;
+    --s1:#8DB2DE; --s2:#DDB07A; --s3:#5E87B8; --s4:#C99478;
+    --good:#7CC39A; --warn:#DDB07A; --bad:#E48A7E;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#1B1915; --surface:#25221D; --sunk:#2B2822; --tint:#342F27; --ink:#F3ECE0; --muted:#B3A792; --line:#3A342B;
+  --accent:#8DB2DE; --accent-soft:#233246; --accent-ink:#13202F;
+  --hero:#1F3553; --hero-ink:#F3ECE0; --hero-muted:#A9BFD9;
+  --s1:#8DB2DE; --s2:#DDB07A; --s3:#5E87B8; --s4:#C99478;
+  --good:#7CC39A; --warn:#DDB07A; --bad:#E48A7E;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+.wrap{max-width:1060px;margin:0 auto;padding-inline:18px;padding-block:22px 72px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;background:var(--hero);color:var(--hero-ink);border-radius:20px;padding:26px 26px 22px;position:relative;overflow:hidden}
+header.top::after{content:"";position:absolute;right:-40px;top:-60px;width:220px;height:220px;border-radius:50%;background:var(--s2);opacity:.22;pointer-events:none}
+header.top>*{position:relative;z-index:1}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,6vw,44px);line-height:1.02;margin:6px 0 0;letter-spacing:-.02em;text-wrap:balance}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--hero-muted)}
+.status{font-size:12px;font-weight:600;color:var(--hero-ink);background:rgba(255,255,255,.14);padding:6px 12px;border-radius:999px}
+.status::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#8FD3A8;margin-right:7px;vertical-align:1px}
+.status.off::before{background:#F0C27F}
+nav.tabs{display:flex;gap:6px;overflow-x:auto;margin-top:18px;padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow);scrollbar-width:none}
+nav.tabs button{font:600 14px var(--body);background:none;border:0;color:var(--muted);padding:9px 16px;cursor:pointer;border-radius:999px;white-space:nowrap;transition:background .15s,color .15s}
+nav.tabs button:hover{color:var(--ink);background:var(--sunk)}
+nav.tabs button[aria-selected="true"]{color:var(--accent-ink);background:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section.panel{padding-top:26px;display:grid;gap:22px}
+h2{font-family:var(--display);font-weight:700;font-size:25px;letter-spacing:-.01em;margin:0 0 4px}
+h3{font-family:var(--display);font-weight:600;font-size:17px;margin:0 0 10px}
+p.lead{color:var(--muted);margin:0;max-width:65ch}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.kpi:first-child{background:var(--tint);border-color:var(--tint)}
+.kpi .k{font-size:12px;font-weight:600;color:var(--muted)}
+.kpi .v{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.01em;font-variant-numeric:tabular-nums;margin-top:4px;color:var(--ink)}
+.kpi .s{font-size:12px;color:var(--muted);margin-top:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;align-items:start}
+.bar{display:flex;height:12px;background:var(--tint);border-radius:999px;overflow:hidden;margin:12px 0;gap:2px}
+.bar span{display:block;height:100%}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:baseline}
+.partner-rows{display:grid;gap:6px}
+.prow{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:10px 0;border-top:1px solid var(--line)}
+.prow:first-child{border-top:0}
+.prow .n{font-weight:700}
+.prow .a{font-family:var(--mono);font-weight:500;font-variant-numeric:tabular-nums;text-align:right}
+.prow .d{grid-column:1/-1;font-size:13px;color:var(--muted)}
+form.entry{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 14px;align-items:end}
+form.entry .wide{grid-column:1/-1}
+label{display:grid;gap:5px;font-size:12px;font-weight:600;color:var(--muted)}
+input,select{font:15px var(--body);color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:9px 12px;width:100%;min-width:0}
+input:focus,select:focus{background:var(--surface);border-color:var(--accent)}
+input[type=checkbox],input[type=radio]{width:auto;accent-color:var(--accent)}
+.check{display:flex;align-items:center;gap:8px;font-weight:500;color:var(--ink);font-size:14px}
+button.btn{font:700 14px var(--body);background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:11px 18px;cursor:pointer;transition:filter .15s}
+button.btn:hover{filter:brightness(1.08)}
+button.ghost{font:600 13px var(--body);background:var(--surface);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer}
+button.ghost:hover{color:var(--ink);border-color:var(--muted)}
+#fijoPct:not([hidden]),#propPct{background:var(--accent-soft);border-radius:12px;padding:12px}
+button.link{background:none;border:0;color:var(--bad);font:600 12px var(--body);cursor:pointer;padding:2px 4px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font-size:12px;font-weight:700;color:var(--muted);text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--sunk);white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:hover td{background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tfoot td{font-weight:700;background:var(--accent-soft);color:var(--ink);border-top:1px solid var(--line)}
+.empty{padding:28px;text-align:center;color:var(--muted);font-size:14px}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.pill.pend{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.pill.cat{background:var(--tint);color:var(--ink)}
+.note{font-size:13px;color:var(--muted);max-width:70ch}
+#inPreview{background:var(--accent-soft);color:var(--ink);border-radius:10px;padding:10px 14px;max-width:none}
+.banner{background:color-mix(in srgb,var(--warn) 12%,var(--surface));border:1px solid var(--warn);color:var(--ink);border-radius:12px;padding:12px 16px;font-size:13px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--hero);color:var(--hero-ink);border-radius:999px;padding:10px 18px;font-size:14px;font-weight:600;opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:var(--shadow)}
+.toast.show{opacity:1}
+.modes{display:grid;gap:8px}
+.modes label{display:flex;gap:10px;align-items:flex-start;font-weight:600;color:var(--ink);font-size:14px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:var(--sunk)}
+.modes label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.modes label small{display:block;color:var(--muted);font-weight:400;margin-top:2px}
+.pctgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.pctgrid input{background:var(--surface)}
+.drop{position:relative;border:2px dashed var(--line);border-radius:12px;padding:18px;background:var(--sunk);display:grid;gap:6px;text-align:center;transition:border-color .15s,background .15s}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
+.drop-lbl{display:grid;gap:2px;cursor:pointer;color:var(--muted);font-weight:500;font-size:13px}
+.drop-lbl strong{color:var(--accent);font-size:15px}
+.drop:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.edit-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.card.is-editing{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#apEditing{font-weight:600;color:var(--accent)}
+button.link.edit{color:var(--accent);margin-right:6px}
+tr.editing td{background:var(--accent-soft)!important}
+.fc-result{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:6px}
+.fc-result li{font-size:13px;padding:8px 12px;border-radius:10px;display:flex;gap:8px;align-items:baseline}
+.fc-result li.ok{background:color-mix(in srgb,var(--good) 12%,transparent);color:var(--ink)}
+.fc-result li.err{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--ink)}
+.fc-result li.run{background:var(--sunk);color:var(--muted)}
+.fc-result li b{flex:none}
+.fc-tools{display:flex;flex-wrap:wrap;gap:10px}
+.fc-tools input{flex:1 1 220px;background:var(--surface)}
+.fc-tools select{flex:0 1 220px;background:var(--surface)}
+.fc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.fc{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.fc-thumb{display:block;width:100%;border:0;padding:0;cursor:zoom-in;aspect-ratio:4/3;max-width:100%;background:var(--tint);position:relative;overflow:hidden}
+button.fclink{background:none;border:0;padding:0;cursor:pointer;font-family:var(--body)}
+.viewer{position:fixed;inset:0;z-index:50;background:rgba(20,24,34,.82);display:flex;flex-direction:column;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px))}
+.vw-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:#fff;padding:4px 4px 10px}
+.vw-title{flex:1 1 200px;font-weight:700;min-width:0;overflow-wrap:anywhere}
+.vw-title small{display:block;font-weight:500;opacity:.75}
+.vw-bar button{font:600 13px var(--body);border:0;border-radius:999px;padding:8px 14px;cursor:pointer;background:rgba(255,255,255,.16);color:#fff}
+.vw-bar button.pri{background:#fff;color:#1F2B45}
+.vw-stage{flex:1;overflow:auto;display:grid;place-items:start center;gap:12px;border-radius:12px}
+.vw-stage img,.vw-stage canvas{max-width:100%;height:auto;background:#fff;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+.vw-stage.zoom img{max-width:none}
+.vw-msg{color:#fff;align-self:center;text-align:center;padding:30px}
+.fc-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.fc-pdf{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:4px;color:var(--accent);font-family:var(--display);font-weight:700;font-size:26px}
+.fc-pdf small{font-family:var(--body);font-size:12px;color:var(--muted);font-weight:500}
+.fc-body{padding:12px 14px;display:grid;gap:3px;flex:1}
+.fc-body .t{font-weight:700;overflow-wrap:anywhere}
+.fc-body .m{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.fc-body .amt{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px}
+.fc-foot{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-top:1px solid var(--line);background:var(--sunk)}
+.fc-foot a{font-weight:700;font-size:13px;color:var(--accent);text-decoration:none}
+.fc-foot a:hover{text-decoration:underline}
+a.fclink{font-weight:600;font-size:13px;color:var(--accent);text-decoration:none;white-space:nowrap}
+.fc-empty{grid-column:1/-1;background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius);padding:28px;text-align:center;color:var(--muted)}
+@media (max-width:520px){header.top{padding:20px 18px 18px;border-radius:16px}.card{padding:16px}}
+@media (prefers-reduced-motion:reduce){.toast,nav.tabs button,button.btn{transition:none}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
+<script src="supabase-config.js"></script>
+<script src="app-supabase.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" id="localName">Local comercial · inversión en acondicionamiento</div>
+      <h1>Cuentas del Local</h1>
+    </div>
+    <div class="status" id="status">Conectando…</div>
+  </header>
+
+  <nav class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-tab="resumen" aria-selected="true">Resumen</button>
+    <button role="tab" data-tab="presupuesto" aria-selected="false">Presupuesto</button>
+    <button role="tab" data-tab="aportes" aria-selected="false">Aportes</button>
+    <button role="tab" data-tab="gastos" aria-selected="false">Gastos de obra</button>
+    <button role="tab" data-tab="facturas" aria-selected="false">Facturas</button>
+    <button role="tab" data-tab="ingresos" aria-selected="false">Alquiler y reparto</button>
+    <button role="tab" data-tab="config" aria-selected="false">Socias y reglas</button>
+  </nav>
+
+  <div id="banner"></div>
+
+  <!-- RESUMEN -->
+  <section class="panel" id="p-resumen">
+    <div class="kpis" id="kpis"></div>
+    <div class="split">
+      <div class="card">
+        <h3>Participación en la inversión</h3>
+        <div class="bar" id="capBar"></div>
+        <div class="partner-rows" id="capRows"></div>
+      </div>
+      <div class="card">
+        <h3>Cómo se repartiría el próximo alquiler</h3>
+        <label for="simMonto">Monto de alquiler a simular</label>
+        <input id="simMonto" type="number" min="0" step="0.01" value="500">
+        <div class="partner-rows" id="simRows" style="margin-top:10px"></div>
+        <p class="note" id="simNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRESUPUESTO -->
+  <section class="panel" id="p-presupuesto" hidden>
+    <div>
+      <h2>Presupuesto de acondicionamiento</h2>
+      <p class="lead">Carguen aquí las partidas de la evaluación de costos. Con el total, la tabla de abajo propone cuánto le toca aportar a cada socia según el porcentaje que acuerden.</p>
+    </div>
+    <div class="card">
+      <form class="entry" id="fPres">
+        <label class="wide" for="prConcepto">Partida<input id="prConcepto" required placeholder="Ej. Pintura interior y fachada"></label>
+        <label for="prCategoria">Categoría<select id="prCategoria"></select></label>
+        <label for="prMonto">Monto estimado<input id="prMonto" type="number" min="0" step="0.01" required></label>
+        <label for="prProveedor">Proveedor / cotización<input id="prProveedor" placeholder="Opcional"></label>
+        <button class="btn" type="submit">Agregar partida</button>
+      </form>
+    </div>
+    <div class="tablewrap"><table id="tPres"></table></div>
+    <div class="card">
+      <h3>Propuesta de aportes</h3>
+      <p class="note">Ajusten el porcentaje que asumirá cada socia. Se guarda para ambas.</p>
+      <div class="pctgrid" id="propPct" style="margin:10px 0"></div>
+      <div class="tablewrap"><table id="tProp"></table></div>
+    </div>
+  </section>
+
+  <!-- APORTES -->
+  <section class="panel" id="p-aportes" hidden>
+    <div>
+      <h2>Aportes de capital</h2>
+      <p class="lead">Cada entrada de dinero o pago que haga una socia para el local. Estos montos definen su participación.</p>
+    </div>
+    <div class="card">
+      <form class="entry" id="fAporte">
+        <label for="apFecha">Fecha<input id="apFecha" type="date" required></label>
+        <label for="apSocia">Socia<select id="apSocia"></select></label>
+        <label for="apMonto">Monto<input id="apMonto" type="number" min="0" step="0.01" required></label>
+        <label for="apForma">Forma<select id="apForma"><option>Transferencia</option><option>Efectivo</option><option>Pago móvil</option><option>Zelle</option><option>Pago directo a proveedor</option><option>Otro</option></select></label>
+        <label class="wide" for="apNota">Nota<input id="apNota" placeholder="Ej. Primer aporte para materiales"></label>
+        <div class="wide edit-actions"><button class="btn" type="submit" id="apBtn">Registrar aporte</button><button class="ghost" type="button" id="apCancel" hidden>Cancelar</button><span class="note" id="apEditing" hidden></span></div>
+      </form>
+    </div>
+    <div class="tablewrap"><table id="tAportes"></table></div>
+  </section>
+
+  <!-- GASTOS -->
+  <section class="panel" id="p-gastos" hidden>
+    <div>
+      <h2>Gastos de obra</h2>
+      <p class="lead">Lo que realmente se va gastando en el acondicionamiento. Si una socia pagó directo de su bolsillo, marquen la casilla y también quedará como aporte suyo.</p>
+    </div>
+    <div class="card">
+      <form class="entry" id="fGasto">
+        <label for="gaFecha">Fecha<input id="gaFecha" type="date" required></label>
+        <label for="gaCategoria">Categoría<select id="gaCategoria"></select></label>
+        <label for="gaMonto">Monto<input id="gaMonto" type="number" min="0" step="0.01" required></label>
+        <label for="gaProveedor">Proveedor<input id="gaProveedor" placeholder="Opcional"></label>
+        <label class="wide" for="gaConcepto">Concepto<input id="gaConcepto" required placeholder="Ej. 12 cajas de cerámica 60x60"></label>
+        <label class="check wide" for="gaDirecto"><input id="gaDirecto" type="checkbox"> Lo pagó una socia de su bolsillo (contar también como aporte)</label>
+        <label for="gaSocia" id="gaSociaWrap" hidden>¿Quién pagó?<select id="gaSocia"></select></label>
+        <label class="wide upl-only" for="gaArchivo">Factura escaneada (opcional)<input id="gaArchivo" type="file" accept="image/*,application/pdf"></label>
+        <button class="btn" type="submit">Registrar gasto</button>
+      </form>
+    </div>
+    <div class="tablewrap"><table id="tGastos"></table></div>
+  </section>
+
+  <!-- FACTURAS -->
+  <section class="panel" id="p-facturas" hidden>
+    <div>
+      <h2>Facturas y comprobantes</h2>
+      <p class="lead">El respaldo digital de cada pago. Suban la foto o el PDF de la factura y vincúlenla al gasto o aporte que respalda. Se aceptan JPG, PNG, WEBP y PDF de hasta 20 MB.</p>
+    </div>
+    <div class="card upl-only">
+      <form class="entry" id="fFactura">
+        <div class="wide drop" id="drop">
+          <input id="fcArchivo" type="file" accept="image/*,application/pdf" multiple>
+          <label for="fcArchivo" class="drop-lbl"><strong>Elegir archivos</strong><span>o arrástralos aquí · puedes subir varios a la vez</span></label>
+          <div id="fcSel" class="note"></div>
+        </div>
+        <label for="fcFecha">Fecha de la factura<input id="fcFecha" type="date" required></label>
+        <label for="fcProveedor">Proveedor<input id="fcProveedor" placeholder="Ej. Ferretería El Tornillo"></label>
+        <label for="fcNumero">N.º de factura<input id="fcNumero" placeholder="Opcional"></label>
+        <label for="fcMonto">Monto<input id="fcMonto" type="number" min="0" step="0.01" placeholder="Opcional"></label>
+        <label class="wide" for="fcVinculo">Respalda a<select id="fcVinculo"></select></label>
+        <label class="wide" for="fcNota">Nota<input id="fcNota" placeholder="Opcional"></label>
+        <button class="btn" type="submit" id="fcBtn">Subir factura</button>
+      </form>
+      <ul id="fcResult" class="fc-result" aria-live="polite" hidden></ul>
+    </div>
+    <div id="fcNoUpload" class="banner" hidden>Puedes ver y abrir las facturas, pero para subir o borrar necesitas permiso de edición en esta página.</div>
+    <div class="fc-tools">
+      <input id="fcBuscar" type="search" placeholder="Buscar por proveedor, número o nota" aria-label="Buscar facturas">
+      <select id="fcFiltro" aria-label="Filtrar facturas"><option value="">Todas</option><option value="sin">Sin vincular</option><option value="gasto">Vinculadas a gastos</option><option value="aporte">Vinculadas a aportes</option></select>
+    </div>
+    <div class="fc-grid" id="fcGrid"></div>
+  </section>
+
+  <!-- INGRESOS -->
+  <section class="panel" id="p-ingresos" hidden>
+    <div>
+      <h2>Alquiler y reparto</h2>
+      <p class="lead">Cuando el local empiece a generar ingresos, registren cada cobro. Se descuentan los gastos del período y la reserva, y el resto se reparte según la regla vigente. El reparto queda congelado en el momento de registrarlo.</p>
+    </div>
+    <div class="card">
+      <form class="entry" id="fIngreso">
+        <label for="inFecha">Fecha de cobro<input id="inFecha" type="date" required></label>
+        <label for="inPeriodo">Período<input id="inPeriodo" type="month" required></label>
+        <label for="inMonto">Monto cobrado<input id="inMonto" type="number" min="0" step="0.01" required></label>
+        <label for="inGastos">Gastos del período<input id="inGastos" type="number" min="0" step="0.01" value="0"></label>
+        <label class="wide" for="inNota">Nota<input id="inNota" placeholder="Ej. Alquiler octubre · inquilino, condominio descontado"></label>
+        <button class="btn" type="submit">Registrar cobro</button>
+      </form>
+      <p class="note" id="inPreview" style="margin-top:10px"></p>
+    </div>
+    <div class="tablewrap"><table id="tIngresos"></table></div>
+  </section>
+
+  <!-- CONFIG -->
+  <section class="panel" id="p-config" hidden>
+    <div>
+      <h2>Socias y reglas</h2>
+      <p class="lead">Nombres, moneda y la regla para repartir las ganancias. Los cambios aplican a los cobros que se registren de aquí en adelante.</p>
+    </div>
+    <div class="split">
+      <div class="card">
+        <h3>Datos generales</h3>
+        <form class="entry" id="fGeneral">
+          <label class="wide" for="cfNombre">Nombre del local<input id="cfNombre" placeholder="Ej. Local Av. Principal"></label>
+          <label for="cfMoneda">Moneda<select id="cfMoneda"><option value="USD">Dólares (USD)</option><option value="VES">Bolívares (VES)</option><option value="EUR">Euros (EUR)</option></select></label>
+          <label for="cfReserva">Reserva por cobro (%)<input id="cfReserva" type="number" min="0" max="100" step="1"></label>
+        </form>
+        <h3 style="margin-top:18px">Socias</h3>
+        <div id="sociasEdit" class="partner-rows"></div>
+        <button class="ghost" id="addSocia" type="button" style="margin-top:10px">Agregar socia</button>
+      </div>
+      <div class="card">
+        <h3>Regla de reparto de ganancias</h3>
+        <div class="modes" id="modes">
+          <label><input type="radio" name="modo" value="capital"><span>Según lo aportado<small>Cada una recibe en proporción a su capital invertido. Es lo más común.</small></span></label>
+          <label><input type="radio" name="modo" value="iguales"><span>Partes iguales<small>Se divide entre todas por igual, sin importar el aporte.</small></span></label>
+          <label><input type="radio" name="modo" value="fijo"><span>Porcentaje acordado<small>Ustedes fijan el porcentaje de cada una.</small></span></label>
+        </div>
+        <div class="pctgrid" id="fijoPct" style="margin-top:12px"></div>
+        <button class="btn" id="saveCfg" type="button" style="margin-top:16px">Guardar cambios</button>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-labelledby="vwTitle" hidden>
+  <div class="vw-bar">
+    <div class="vw-title" id="vwTitle"></div>
+    <button type="button" id="vwZoom">Ampliar</button>
+    <button type="button" id="vwDown" class="pri">Descargar</button>
+    <button type="button" id="vwClose">Cerrar</button>
+  </div>
+  <div class="vw-stage" id="vwStage"></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+const CATS=["Albañilería","Pintura","Electricidad","Plomería","Pisos y revestimientos","Herrería / santamaría","Aire acondicionado","Baño","Permisos y trámites","Mano de obra","Mudanza y limpieza","Otro"];
+const DEF_CFG={nombre:"",moneda:"USD",reserva:0,modo:"capital",socias:[{id:"s1",nombre:"Aida"},{id:"s2",nombre:"Maria"}],fijo:{s1:50,s2:50},propuesta:{s1:50,s2:50}};
+const state={cfg:structuredClone(DEF_CFG),aportes:[],gastos:[],ingresos:[],presupuesto:[],facturas:[]};
+let db=null, assets=null, online=false, apEditId=null;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const fmtDate=s=>{if(!s)return"";const[y,m,d]=s.split("-");return d?`${d}/${m}/${y}`:`${m}/${y}`};
+const MESES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const fmtMonth=s=>{if(!s)return"";const[y,m]=s.split("-");return MESES[+m-1]+" "+y};
+function money(n){const c=state.cfg.moneda||"USD";try{return new Intl.NumberFormat("es-VE",{style:"currency",currency:c,minimumFractionDigits:2,maximumFractionDigits:2}).format(n||0)}catch(e){return (n||0).toFixed(2)+" "+c}}
+const pct=n=>(n*100).toLocaleString("es-VE",{maximumFractionDigits:1})+" %";
+const COLORS=["var(--s1)","var(--s2)","var(--s3)","var(--s4)"];
+const color=id=>{const i=state.cfg.socias.findIndex(s=>s.id===id);return COLORS[(i<0?0:i)%COLORS.length]};
+const nombre=id=>(state.cfg.socias.find(s=>s.id===id)||{}).nombre||"—";
+const sum=(a,f)=>a.reduce((t,x)=>t+(+f(x)||0),0);
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2200)}
+
+/* ---------- cálculos ---------- */
+function aportadoPor(id){return sum(state.aportes.filter(a=>a.socia===id),a=>a.monto)}
+function participacion(){
+  const S=state.cfg.socias, tot=sum(S,s=>aportadoPor(s.id)), out={};
+  S.forEach(s=>out[s.id]=tot>0?aportadoPor(s.id)/tot:1/S.length);
+  return out;
+}
+function reglaReparto(){
+  const S=state.cfg.socias, m=state.cfg.modo, out={};
+  if(m==="iguales"){S.forEach(s=>out[s.id]=1/S.length)}
+  else if(m==="fijo"){const t=sum(S,s=>state.cfg.fijo?.[s.id]);S.forEach(s=>out[s.id]=t>0?(+state.cfg.fijo?.[s.id]||0)/t:1/S.length)}
+  else return participacion();
+  return out;
+}
+function calcularReparto(monto,gastos){
+  const neto=Math.max(0,(+monto||0)-(+gastos||0));
+  const reserva=neto*((+state.cfg.reserva||0)/100);
+  const aRepartir=neto-reserva, r=reglaReparto(), rep={};
+  state.cfg.socias.forEach(s=>rep[s.id]=Math.round(aRepartir*r[s.id]*100)/100);
+  return {neto,reserva,aRepartir,rep,pcts:r};
+}
+const modoTxt=()=>({capital:"según lo aportado",iguales:"en partes iguales",fijo:"según el porcentaje acordado"})[state.cfg.modo];
+
+/* ---------- render ---------- */
+function renderAll(){
+  $("#localName").textContent=(state.cfg.nombre?state.cfg.nombre+" · ":"Local comercial · ")+"inversión en acondicionamiento";
+  fillSelects(); renderResumen(); renderPres(); renderAportes(); renderGastos(); renderFacturas(); renderIngresos(); renderConfig(); updatePreview();
+}
+/* ---------- facturas ---------- */
+const blobUrl=id=>"/_blob/"+id;
+const fileUrl=async id=>window.__fileUrl?await window.__fileUrl(id):blobUrl(id);
+function hydrateImgs(root){root.querySelectorAll("img[data-asset]").forEach(async img=>{const id=img.dataset.asset;img.removeAttribute("data-asset");try{img.src=await fileUrl(id)}catch(_){img.onerror&&img.onerror()}})}
+const kb=n=>n>=1048576?(n/1048576).toFixed(1)+" MB":Math.max(1,Math.round(n/1024))+" KB";
+function facturasDe(tipo,id){return state.facturas.filter(f=>f.vinculo===tipo+":"+id)}
+function factLinks(tipo,id){const fs=facturasDe(tipo,id);if(!fs.length)return '<span style="color:var(--muted)">—</span>';
+  return fs.map((f,i)=>`<button type="button" class="fclink" data-ver="${f.id}">Ver${fs.length>1?" "+(i+1):""}</button>`).join(" · ")}
+function vinculoTxt(v){
+  if(!v)return"Sin vincular";const[t,id]=v.split(":");
+  if(t==="gasto"){const g=state.gastos.find(x=>x.id===id);return g?"Gasto: "+g.concepto:"Gasto eliminado"}
+  if(t==="aporte"){const a=state.aportes.find(x=>x.id===id);return a?"Aporte de "+nombre(a.socia)+" · "+fmtDate(a.fecha):"Aporte eliminado"}
+  return"Sin vincular";
+}
+function fillVinculo(){
+  const el=$("#fcVinculo"),v=el.value;
+  const gs=[...state.gastos].sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""));
+  const as=[...state.aportes].sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""));
+  el.innerHTML='<option value="">Sin vincular por ahora</option>'+
+    (gs.length?`<optgroup label="Gastos de obra">${gs.map(g=>`<option value="gasto:${g.id}">${fmtDate(g.fecha)} · ${esc(g.concepto)} · ${money(g.monto)}</option>`).join("")}</optgroup>`:"")+
+    (as.length?`<optgroup label="Aportes">${as.map(a=>`<option value="aporte:${a.id}">${fmtDate(a.fecha)} · ${esc(nombre(a.socia))} · ${money(a.monto)}</option>`).join("")}</optgroup>`:"");
+  if(v&&[...el.options].some(o=>o.value===v))el.value=v;
+}
+function renderFacturas(){
+  fillVinculo();
+  const q=($("#fcBuscar").value||"").toLowerCase().trim(), fl=$("#fcFiltro").value;
+  let rows=[...state.facturas].sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||"")||(b.creado||"").localeCompare(a.creado||""));
+  if(fl==="sin")rows=rows.filter(f=>!f.vinculo);else if(fl)rows=rows.filter(f=>(f.vinculo||"").startsWith(fl+":"));
+  if(q)rows=rows.filter(f=>[f.proveedor,f.numero,f.nota,f.archivo,vinculoTxt(f.vinculo)].join(" ").toLowerCase().includes(q));
+  const canDel=!!assets;
+  $("#fcGrid").innerHTML=rows.length?rows.map(f=>{
+    const isPdf=f.tipo==="application/pdf";
+    return `<article class="fc"><button type="button" class="fc-thumb" data-ver="${f.id}" aria-label="Abrir ${esc(f.archivo)}">${isPdf?`<span class="fc-pdf">PDF<small>${esc(kb(f.tamano||0))}</small></span>`:`<img data-asset="${esc(f.assetId)}" alt="Factura ${esc(f.proveedor||f.archivo)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'fc-pdf',textContent:'No disponible'}))">`}</button>
+      <div class="fc-body"><span class="t">${esc(f.proveedor||f.archivo)}</span>
+      <span class="m">${fmtDate(f.fecha)}${f.numero?" · N.º "+esc(f.numero):""}</span>
+      ${f.monto?`<span class="amt">${money(f.monto)}</span>`:""}
+      <span class="m">${esc(vinculoTxt(f.vinculo))}</span>${f.nota?`<span class="m">${esc(f.nota)}</span>`:""}</div>
+      <div class="fc-foot"><button type="button" class="fclink" data-ver="${f.id}">Abrir</button>${canDel?delBtn("facturas",f.id):""}</div></article>`}).join("")
+  :`<div class="fc-empty">${state.facturas.length?"Ninguna factura coincide con la búsqueda.":"Todavía no hay facturas. Sube la primera con el formulario de arriba."}</div>`;
+  hydrateImgs($("#fcGrid"));
+}
+const OK_TYPES=["image/jpeg","image/png","image/webp","image/gif","application/pdf"];
+async function prepararArchivo(file){
+  let type=file.type;
+  if(!type&&/\.pdf$/i.test(file.name))type="application/pdf";
+  if(OK_TYPES.includes(type)&&file.size<=20*1048576&&!(type.startsWith("image/")&&file.size>4*1048576))return {blob:file,type};
+  if(type.startsWith("image/")||/\.(heic|heif|jpe?g|png|webp)$/i.test(file.name)){
+    // convierte HEIC u otros formatos a JPG y reduce fotos muy pesadas
+    const bmp=await createImageBitmap(file).catch(()=>null);
+    if(!bmp)throw {code:"unsupported_type"};
+    const max=2600, s=Math.min(1,max/Math.max(bmp.width,bmp.height));
+    const c=document.createElement("canvas");c.width=Math.round(bmp.width*s);c.height=Math.round(bmp.height*s);
+    c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
+    const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.85));
+    if(!blob)throw {code:"unsupported_type"};
+    return {blob,type:"image/jpeg"};
+  }
+  if(file.size>20*1048576)throw {code:"too_large"};
+  throw {code:"unsupported_type"};
+}
+function upErr(e,name){const m={too_large:"es mayor de 20 MB",unsupported_type:"no es una imagen o PDF válido",quota_or_state:"no cabe: se llenó el espacio de archivos",rate_limited:"no se pudo subir ahora; espera un momento",not_granted:"no se puede subir sin permiso de edición"};
+  return `“${name}” ${m[e?.code]||"no se pudo subir. Intenta de nuevo."}`}
+async function subirFactura(file,meta){
+  if(!assets)throw {code:"not_granted"};
+  const {blob,type}=await prepararArchivo(file);
+  let r;try{r=await assets.upload(blob,{type})}catch(e){if(e?.code==="store_unavailable"){await new Promise(x=>setTimeout(x,1200));r=await assets.upload(blob,{type})}else throw e}
+  await add("facturas",{...meta,assetId:r.id,archivo:file.name,tipo:r.contentType,tamano:r.sizeBytes});
+}
+function fillSelects(){
+  const opts=state.cfg.socias.map(s=>`<option value="${s.id}">${esc(s.nombre)}</option>`).join("");
+  ["#apSocia","#gaSocia"].forEach(sel=>{const el=$(sel),v=el.value;el.innerHTML=opts;if(v&&state.cfg.socias.some(s=>s.id===v))el.value=v});
+  const co=CATS.map(c=>`<option>${c}</option>`).join("");
+  ["#prCategoria","#gaCategoria"].forEach(sel=>{const el=$(sel);if(!el.options.length)el.innerHTML=co});
+}
+function renderResumen(){
+  const tA=sum(state.aportes,a=>a.monto), tG=sum(state.gastos,g=>g.monto), tP=sum(state.presupuesto,p=>p.monto), tI=sum(state.ingresos,i=>i.monto);
+  const pend=state.ingresos.filter(i=>!i.pagado).length;
+  $("#kpis").innerHTML=[
+    ["Presupuesto estimado",money(tP),tP?(tG?pct(tG/tP)+" ya ejecutado":"sin gastos todavía"):"esperando la evaluación"],
+    ["Total aportado",money(tA),state.aportes.length+" aporte"+(state.aportes.length===1?"":"s")],
+    ["Gastado en obra",money(tG),state.gastos.length+" gasto"+(state.gastos.length===1?"":"s")],
+    ["Disponible en caja",money(tA-tG),tA-tG<0?"faltan aportes para cubrir lo gastado":"aportes menos gastos"],
+    ["Ingresos cobrados",money(tI),pend?pend+" reparto"+(pend===1?"":"s")+" por pagar":"el local aún no genera ingresos"]
+  ].map(([k,v,s])=>`<div class="kpi"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${esc(s)}</div></div>`).join("");
+  const p=participacion();
+  $("#capBar").innerHTML=tA>0?state.cfg.socias.map(s=>`<span style="width:${p[s.id]*100}%;background:${color(s.id)}"></span>`).join(""):"";
+  $("#capRows").innerHTML=state.cfg.socias.map(s=>{
+    const a=aportadoPor(s.id), recib=sum(state.ingresos,i=>i.reparto?.[s.id]);
+    return `<div class="prow"><span class="n"><span class="dot" style="background:${color(s.id)}"></span>${esc(s.nombre)}</span><span class="a">${money(a)}</span>
+    <span class="d">${tA>0?pct(p[s.id])+" del capital":"sin aportes registrados"}${recib?" · ha recibido "+money(recib)+" en repartos":""}</span></div>`}).join("");
+  renderSim();
+}
+function renderSim(){
+  const m=+$("#simMonto").value||0, r=calcularReparto(m,0);
+  $("#simRows").innerHTML=state.cfg.socias.map(s=>`<div class="prow"><span class="n"><span class="dot" style="background:${color(s.id)}"></span>${esc(s.nombre)}</span><span class="a">${money(r.rep[s.id])}</span><span class="d">${pct(r.pcts[s.id])}</span></div>`).join("");
+  $("#simNote").textContent=`Regla vigente: reparto ${modoTxt()}`+(+state.cfg.reserva?`, con ${state.cfg.reserva} % a reserva (${money(r.reserva)}).`:", sin reserva.");
+}
+function delBtn(col,id){return `<button class="link" data-del="${col}" data-id="${id}" aria-label="Eliminar">Eliminar</button>`}
+function renderPres(){
+  const rows=[...state.presupuesto].sort((a,b)=>(a.categoria||"").localeCompare(b.categoria||""));
+  const t=sum(rows,r=>r.monto);
+  $("#tPres").innerHTML=rows.length?`<thead><tr><th>Partida</th><th>Categoría</th><th>Proveedor</th><th class="num">Monto</th><th class="num">Gastado</th><th></th></tr></thead><tbody>${
+    rows.map(r=>{const g=sum(state.gastos.filter(x=>x.categoria===r.categoria),x=>x.monto);return `<tr><td>${esc(r.concepto)}</td><td><span class="pill cat">${esc(r.categoria)}</span></td><td>${esc(r.proveedor)}</td><td class="num">${money(r.monto)}</td><td class="num" style="color:var(--muted)">${g?money(g):"—"}</td><td>${delBtn("presupuesto",r.id)}</td></tr>`}).join("")
+  }</tbody><tfoot><tr><td colspan="3">Total estimado</td><td class="num">${money(t)}</td><td class="num">${money(sum(state.gastos,g=>g.monto))}</td><td></td></tr></tfoot>`
+  :`<tbody><tr><td class="empty">Todavía no hay partidas. Cuando tengan la evaluación de costos, agréguenlas arriba.</td></tr></tbody>`;
+  $("#tPres").querySelectorAll("tbody td:nth-child(5)").forEach(td=>td.title="Gastado en la misma categoría");
+  const S=state.cfg.socias, prop=state.cfg.propuesta||{};
+  $("#propPct").innerHTML=S.map(s=>`<label for="pp-${s.id}">${esc(s.nombre)} (%)<input id="pp-${s.id}" data-prop="${s.id}" type="number" min="0" max="100" step="1" value="${prop[s.id]??Math.round(100/S.length)}"></label>`).join("");
+  const tp=sum(S,s=>prop[s.id]??100/S.length)||1;
+  $("#tProp").innerHTML=`<thead><tr><th>Socia</th><th class="num">%</th><th class="num">Le toca aportar</th><th class="num">Ya aportó</th><th class="num">Falta</th></tr></thead><tbody>${
+    S.map(s=>{const share=(prop[s.id]??100/S.length)/tp, meta=t*share, ya=aportadoPor(s.id), f=meta-ya;
+      return `<tr><td><span class="dot" style="background:${color(s.id)}"></span>${esc(s.nombre)}</td><td class="num">${pct(share)}</td><td class="num">${money(meta)}</td><td class="num">${money(ya)}</td><td class="num">${t?(f>0.005?money(f):'<span class="pill ok">Completo</span>'):"—"}</td></tr>`}).join("")
+  }</tbody>`;
+}
+function renderAportes(){
+  const rows=[...state.aportes].sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""));
+  $("#tAportes").innerHTML=rows.length?`<thead><tr><th>Fecha</th><th>Socia</th><th>Forma</th><th>Nota</th><th class="num">Monto</th><th></th></tr></thead><tbody>${
+    rows.map(r=>`<tr${r.id===apEditId?' class="editing"':""}><td>${fmtDate(r.fecha)}</td><td><span class="dot" style="background:${color(r.socia)}"></span>${esc(nombre(r.socia))}</td><td>${esc(r.forma)}</td><td>${esc(r.nota)}${r.gastoId?' <span class="pill cat">desde gasto</span>':""}${facturasDe("aporte",r.id).length?" · "+factLinks("aporte",r.id):""}</td><td class="num">${money(r.monto)}</td><td style="white-space:nowrap"><button class="link edit" type="button" data-editap="${r.id}">Editar</button>${delBtn("aportes",r.id)}</td></tr>`).join("")
+  }</tbody><tfoot><tr><td colspan="4">Total aportado</td><td class="num">${money(sum(rows,r=>r.monto))}</td><td></td></tr></tfoot>`
+  :`<tbody><tr><td class="empty">Aún no hay aportes registrados.</td></tr></tbody>`;
+}
+function renderGastos(){
+  const rows=[...state.gastos].sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""));
+  $("#tGastos").innerHTML=rows.length?`<thead><tr><th>Fecha</th><th>Concepto</th><th>Categoría</th><th>Proveedor</th><th>Pagado con</th><th>Factura</th><th class="num">Monto</th><th></th></tr></thead><tbody>${
+    rows.map(r=>`<tr><td>${fmtDate(r.fecha)}</td><td>${esc(r.concepto)}</td><td><span class="pill cat">${esc(r.categoria)}</span></td><td>${esc(r.proveedor)}</td><td>${r.pagadoPor?`<span class="dot" style="background:${color(r.pagadoPor)}"></span>${esc(nombre(r.pagadoPor))}`:"Caja común"}</td><td>${factLinks("gasto",r.id)}</td><td class="num">${money(r.monto)}</td><td>${delBtn("gastos",r.id)}</td></tr>`).join("")
+  }</tbody><tfoot><tr><td colspan="6">Total gastado</td><td class="num">${money(sum(rows,r=>r.monto))}</td><td></td></tr></tfoot>`
+  :`<tbody><tr><td class="empty">Aún no hay gastos de obra registrados.</td></tr></tbody>`;
+}
+function renderIngresos(){
+  const rows=[...state.ingresos].sort((a,b)=>(b.periodo||"").localeCompare(a.periodo||""));
+  const S=state.cfg.socias;
+  $("#tIngresos").innerHTML=rows.length?`<thead><tr><th>Período</th><th class="num">Cobrado</th><th class="num">Gastos</th><th class="num">Reserva</th>${S.map(s=>`<th class="num">${esc(s.nombre)}</th>`).join("")}<th>Estado</th><th></th></tr></thead><tbody>${
+    rows.map(r=>`<tr><td>${fmtMonth(r.periodo)}<div class="note">${esc(r.nota)}</div></td><td class="num">${money(r.monto)}</td><td class="num">${money(r.gastos)}</td><td class="num">${money(r.reserva)}</td>${S.map(s=>`<td class="num">${money(r.reparto?.[s.id])}</td>`).join("")}<td><button class="ghost" data-pago="${r.id}">${r.pagado?'<span class="pill ok">Repartido</span>':'<span class="pill pend">Por repartir</span>'}</button></td><td>${delBtn("ingresos",r.id)}</td></tr>`).join("")
+  }</tbody><tfoot><tr><td>Total</td><td class="num">${money(sum(rows,r=>r.monto))}</td><td class="num">${money(sum(rows,r=>r.gastos))}</td><td class="num">${money(sum(rows,r=>r.reserva))}</td>${S.map(s=>`<td class="num">${money(sum(rows,r=>r.reparto?.[s.id]))}</td>`).join("")}<td colspan="2"></td></tr></tfoot>`
+  :`<tbody><tr><td class="empty">Todavía no hay cobros. Cuando el local esté alquilado, registren cada pago aquí.</td></tr></tbody>`;
+}
+function renderConfig(){
+  const c=state.cfg;
+  if(document.activeElement?.closest?.("#p-config"))return; // no pisar lo que se está editando
+  $("#cfNombre").value=c.nombre||""; $("#cfMoneda").value=c.moneda||"USD"; $("#cfReserva").value=c.reserva||0;
+  document.querySelectorAll('input[name=modo]').forEach(r=>r.checked=r.value===c.modo);
+  $("#sociasEdit").innerHTML=c.socias.map((s,i)=>`<div class="prow" style="grid-template-columns:auto 1fr auto;align-items:center"><span class="dot" style="background:${COLORS[i%4]}"></span><input id="sn-${s.id}" data-socia="${s.id}" value="${esc(s.nombre)}" aria-label="Nombre de socia">${c.socias.length>2&&!aportadoPor(s.id)?`<button class="link" data-rmsocia="${s.id}">Quitar</button>`:"<span></span>"}</div>`).join("");
+  renderFijo();
+}
+function renderFijo(){
+  const c=state.cfg, show=document.querySelector('input[name=modo]:checked')?.value==="fijo";
+  $("#fijoPct").hidden=!show;
+  $("#fijoPct").innerHTML=c.socias.map(s=>`<label for="fp-${s.id}">${esc(s.nombre)} (%)<input id="fp-${s.id}" data-fijo="${s.id}" type="number" min="0" max="100" step="1" value="${c.fijo?.[s.id]??Math.round(100/c.socias.length)}"></label>`).join("");
+}
+function updatePreview(){
+  const m=+$("#inMonto").value, g=+$("#inGastos").value||0;
+  if(!m){$("#inPreview").textContent=`Se repartirá ${modoTxt()}.`;return}
+  const r=calcularReparto(m,g);
+  $("#inPreview").textContent=`Neto ${money(r.neto)}`+(r.reserva?` · reserva ${money(r.reserva)}`:"")+" · "+state.cfg.socias.map(s=>`${s.nombre}: ${money(r.rep[s.id])} (${pct(r.pcts[s.id])})`).join(" · ");
+}
+
+/* ---------- datos ---------- */
+function newId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+async function add(col,data){
+  const id=newId(); data={...data,creado:new Date().toISOString()};
+  if(db){try{await db.collection(col).doc(id).set(data)}catch(e){toast(errMsg(e));throw e}}
+  else{state[col].push({id,...data});renderAll()}
+  return id;
+}
+async function del(col,id){
+  if(db){try{await db.collection(col).doc(id).delete()}catch(e){toast(errMsg(e))}}
+  else{state[col]=state[col].filter(x=>x.id!==id);renderAll()}
+}
+async function patch(col,id,data){
+  if(db){try{await db.collection(col).doc(id).update(data)}catch(e){toast(errMsg(e))}}
+  else{Object.assign(state[col].find(x=>x.id===id),data);renderAll()}
+}
+async function saveCfg(){
+  if(db){try{await db.doc("config/general").set(state.cfg)}catch(e){toast(errMsg(e));return false}}
+  renderAll();return true;
+}
+function errMsg(e){return e?.code==="invalid_argument"?"No tienes permiso para modificar estos datos. Pide acceso de Colaboradora.":e?.code==="quota_exceeded"?"Se llegó al límite de registros.":"No se pudo guardar. Intenta de nuevo."}
+
+/* ---------- eventos ---------- */
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]");if(!b)return;
+  document.querySelectorAll("#tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  document.querySelectorAll("section.panel").forEach(p=>p.hidden=p.id!=="p-"+b.dataset.tab);
+  try{localStorage.setItem("tab",b.dataset.tab)}catch(_){} });
+document.addEventListener("click",async e=>{
+  const d=e.target.closest("[data-del]");
+  if(d){ if(d.dataset.armed){const col=d.dataset.del,id=d.dataset.id;
+      if(col==="gastos"){const ap=state.aportes.find(a=>a.gastoId===id);if(ap)await del("aportes",ap.id)}
+      if(col==="facturas"){const f=state.facturas.find(x=>x.id===id);if(f&&assets){try{await assets.delete(f.assetId)}catch(e){toast("No se pudo borrar el archivo. Intenta de nuevo.");return}}}
+      await del(col,id);toast("Registro eliminado")}
+    else{d.dataset.armed="1";d.textContent="¿Seguro?";setTimeout(()=>{if(d.isConnected){delete d.dataset.armed;d.textContent="Eliminar"}},3000)} return}
+  const p=e.target.closest("[data-pago]");
+  if(p){const r=state.ingresos.find(x=>x.id===p.dataset.pago);if(r){await patch("ingresos",r.id,{pagado:!r.pagado});toast(r.pagado?"Marcado por repartir":"Marcado como repartido")}return}
+  const rm=e.target.closest("[data-rmsocia]");
+  if(rm){state.cfg.socias=state.cfg.socias.filter(s=>s.id!==rm.dataset.rmsocia);await saveCfg();return}
+});
+$("#fPres").addEventListener("submit",async e=>{e.preventDefault();
+  await add("presupuesto",{concepto:$("#prConcepto").value.trim(),categoria:$("#prCategoria").value,monto:+$("#prMonto").value,proveedor:$("#prProveedor").value.trim()});
+  e.target.reset();toast("Partida agregada");$("#prConcepto").focus()});
+function apModo(id){
+  apEditId=id||null;const r=id&&state.aportes.find(x=>x.id===id);
+  $("#apBtn").textContent=r?"Guardar cambios":"Registrar aporte";
+  $("#apCancel").hidden=!r;$("#apEditing").hidden=!r;
+  $("#fAporte").closest(".card").classList.toggle("is-editing",!!r);
+  if(r){
+    $("#apFecha").value=r.fecha||today();$("#apSocia").value=r.socia;$("#apMonto").value=r.monto;
+    const fo=$("#apForma");if(![...fo.options].some(o=>o.value===r.forma))fo.add(new Option(r.forma,r.forma));fo.value=r.forma||"Transferencia";
+    $("#apNota").value=r.nota||"";
+    $("#apEditing").textContent="Editando el aporte de "+nombre(r.socia)+" del "+fmtDate(r.fecha);
+    $("#fAporte").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"center"});
+    $("#apMonto").focus();
+  }else{$("#apMonto").value="";$("#apNota").value="";$("#apFecha").value=today()}
+  renderAportes();
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-editap]");if(b)apModo(b.dataset.editap)});
+$("#apCancel").addEventListener("click",()=>apModo(null));
+$("#fAporte").addEventListener("submit",async e=>{e.preventDefault();
+  const data={fecha:$("#apFecha").value,socia:$("#apSocia").value,monto:+$("#apMonto").value,forma:$("#apForma").value,nota:$("#apNota").value.trim()};
+  if(apEditId){
+    const r=state.aportes.find(x=>x.id===apEditId);
+    if(!r){toast("Ese aporte ya no existe.");apModo(null);return}
+    await patch("aportes",apEditId,data);
+    if(r.gastoId&&state.gastos.some(g=>g.id===r.gastoId))await patch("gastos",r.gastoId,{fecha:data.fecha,monto:data.monto,pagadoPor:data.socia});
+    apModo(null);toast("Aporte actualizado");return;
+  }
+  await add("aportes",data);
+  $("#apMonto").value="";$("#apNota").value="";toast("Aporte registrado")});
+$("#gaDirecto").addEventListener("change",e=>$("#gaSociaWrap").hidden=!e.target.checked);
+$("#fGasto").addEventListener("submit",async e=>{e.preventDefault();
+  const directo=$("#gaDirecto").checked, socia=directo?$("#gaSocia").value:null;
+  const g={fecha:$("#gaFecha").value,categoria:$("#gaCategoria").value,monto:+$("#gaMonto").value,proveedor:$("#gaProveedor").value.trim(),concepto:$("#gaConcepto").value.trim(),pagadoPor:socia};
+  const file=$("#gaArchivo").files[0];
+  const gid=await add("gastos",g);
+  if(directo)await add("aportes",{fecha:g.fecha,socia,monto:g.monto,forma:"Pago directo a proveedor",nota:g.concepto,gastoId:gid});
+  $("#gaMonto").value="";$("#gaConcepto").value="";$("#gaProveedor").value="";
+  if(file){toast("Subiendo factura…");
+    try{await subirFactura(file,{fecha:g.fecha,proveedor:g.proveedor,numero:"",monto:g.monto,vinculo:"gasto:"+gid,nota:""});$("#gaArchivo").value="";toast("Gasto registrado con su factura")}
+    catch(err){toast("Gasto registrado, pero la factura "+upErr(err,file.name).replace(/^“[^”]*” /,""))}
+    return}
+  toast(directo?"Gasto registrado y sumado como aporte":"Gasto registrado")});
+/* facturas */
+const fcIn=$("#fcArchivo"), drop=$("#drop");
+function showSel(){const fs=[...fcIn.files];$("#fcSel").textContent=fs.length?fs.map(f=>f.name+" ("+kb(f.size)+")").join(" · "):"";$("#fcBtn").textContent=fs.length>1?`Subir ${fs.length} facturas`:"Subir factura"}
+fcIn.addEventListener("change",showSel);
+["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));
+drop.addEventListener("drop",e=>{if(e.dataTransfer?.files?.length){fcIn.files=e.dataTransfer.files;showSel()}});
+$("#fFactura").addEventListener("submit",async e=>{e.preventDefault();
+  const files=[...fcIn.files];if(!files.length){toast("Elige al menos un archivo.");return}
+  const btn=$("#fcBtn");btn.disabled=true;
+  const meta={fecha:$("#fcFecha").value,proveedor:$("#fcProveedor").value.trim(),numero:$("#fcNumero").value.trim(),monto:+$("#fcMonto").value||0,vinculo:$("#fcVinculo").value,nota:$("#fcNota").value.trim()};
+  let ok=0;const errs=[];
+  const ul=$("#fcResult");ul.hidden=false;
+  ul.innerHTML=files.map((f,i)=>`<li class="run" id="fr${i}"><b>…</b><span>${esc(f.name)}: en espera</span></li>`).join("");
+  const mark=(i,cls,txt)=>{const li=$("#fr"+i);if(li){li.className=cls;li.innerHTML=`<b>${cls==="ok"?"✓":cls==="err"?"✕":"…"}</b><span>${txt}</span>`}};
+  for(const [i,f] of files.entries()){btn.textContent=`Subiendo ${i+1} de ${files.length}…`;mark(i,"run",esc(f.name)+": subiendo…");
+    try{await subirFactura(f,meta);ok++;mark(i,"ok",esc(f.name)+": guardada")}
+    catch(err){const m=upErr(err,f.name);errs.push(m);mark(i,"err",esc(m)+(err?.code?"":" (tipo: "+esc(f.type||"desconocido")+")"))}}
+  btn.disabled=false;
+  if(ok){fcIn.value="";["#fcProveedor","#fcNumero","#fcMonto","#fcNota"].forEach(s=>$(s).value="");$("#fcVinculo").value=""}
+  showSel();
+  toast(errs.length?(ok?`${ok} subida${ok>1?"s":""}, ${errs.length} con error`:"No se pudo subir. Revisa el detalle abajo."):(ok>1?ok+" facturas subidas":"Factura subida"))});
+/* visor de facturas */
+let vwCur=null, pdfLib=null;
+function loadScript(src){return new Promise((ok,ko)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=ko;document.head.appendChild(s)})}
+async function getPdf(){
+  if(pdfLib)return pdfLib;
+  const B="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+  await loadScript(B+"pdf.worker.min.js"); await loadScript(B+"pdf.min.js");
+  pdfLib=window.pdfjsLib; return pdfLib;
+}
+async function abrirFactura(id){
+  const f=state.facturas.find(x=>x.id===id);if(!f)return;vwCur=f;
+  const v=$("#viewer"),st=$("#vwStage");
+  $("#vwTitle").innerHTML=`${esc(f.proveedor||f.archivo)}<small>${fmtDate(f.fecha)}${f.numero?" · N.º "+esc(f.numero):""}${f.monto?" · "+money(f.monto):""}</small>`;
+  st.className="vw-stage";st.innerHTML='<div class="vw-msg">Cargando…</div>';
+  $("#vwZoom").hidden=f.tipo==="application/pdf";$("#vwZoom").textContent="Ampliar";
+  v.hidden=false;document.body.style.overflow="hidden";$("#vwClose").focus();
+  let u;try{u=await fileUrl(f.assetId)}catch(_){st.innerHTML='<div class="vw-msg">No se pudo cargar la factura. Revisa tu conexión e intenta de nuevo.</div>';return}
+  if(vwCur!==f)return;
+  if(f.tipo!=="application/pdf"){
+    const img=new Image();img.alt="Factura "+(f.proveedor||f.archivo);
+    img.onload=()=>{if(vwCur===f){st.innerHTML="";st.appendChild(img)}};
+    img.onerror=()=>{if(vwCur===f)st.innerHTML='<div class="vw-msg">No se pudo cargar la imagen. Recarga la página e intenta de nuevo.</div>'};
+    img.src=u;return;
+  }
+  try{
+    const [lib,buf]=await Promise.all([getPdf(),fetch(u).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()})]);
+    const doc=await lib.getDocument({data:new Uint8Array(buf),isEvalSupported:false}).promise;
+    if(vwCur!==f)return;st.innerHTML="";
+    const w=Math.min(st.clientWidth||800,1000);
+    for(let p=1;p<=doc.numPages;p++){
+      const pg=await doc.getPage(p), vp0=pg.getViewport({scale:1}), sc=(w/vp0.width)*(window.devicePixelRatio||1);
+      const vp=pg.getViewport({scale:sc}), c=document.createElement("canvas");
+      c.width=vp.width;c.height=vp.height;c.style.width=Math.round(vp.width/(window.devicePixelRatio||1))+"px";
+      st.appendChild(c);await pg.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;
+      if(vwCur!==f)return;
+    }
+  }catch(e){if(vwCur===f)st.innerHTML='<div class="vw-msg">No se pudo mostrar el PDF aquí. Usa “Descargar” para verlo en tu dispositivo.</div>'}
+}
+function cerrarVisor(){$("#viewer").hidden=true;$("#vwStage").innerHTML="";vwCur=null;document.body.style.overflow=""}
+$("#vwClose").addEventListener("click",cerrarVisor);
+$("#viewer").addEventListener("click",e=>{if(e.target.id==="viewer"||e.target.id==="vwStage")cerrarVisor()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#viewer").hidden)cerrarVisor()});
+$("#vwZoom").addEventListener("click",()=>{const st=$("#vwStage");st.classList.toggle("zoom");$("#vwZoom").textContent=st.classList.contains("zoom")?"Ajustar":"Ampliar"});
+$("#vwDown").addEventListener("click",async()=>{
+  const f=vwCur;if(!f)return;
+  const dl=await window.claude?.use?.("downloads").catch(()=>null);
+  if(!dl){toast("La descarga no está disponible en esta vista.");return}
+  try{
+    const blob=await fetch(await fileUrl(f.assetId)).then(r=>{if(!r.ok)throw 0;return r.blob()});
+    const ext=f.tipo==="application/pdf"?"pdf":f.tipo==="image/png"?"png":f.tipo==="image/webp"?"webp":f.tipo==="image/gif"?"gif":"jpg";
+    let name=(f.archivo||"factura").replace(/\.[^.]+$/,"")+"."+ext;
+    await dl.save({filename:name,data:blob});toast("Factura descargada");
+  }catch(e){if(e?.code!=="declined")toast("No se pudo descargar. Intenta de nuevo.")}
+});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-ver]");if(b)abrirFactura(b.dataset.ver)});
+$("#fcBuscar").addEventListener("input",renderFacturas);
+$("#fcFiltro").addEventListener("change",renderFacturas);
+$("#fIngreso").addEventListener("submit",async e=>{e.preventDefault();
+  const m=+$("#inMonto").value,g=+$("#inGastos").value||0,r=calcularReparto(m,g);
+  await add("ingresos",{fecha:$("#inFecha").value,periodo:$("#inPeriodo").value,monto:m,gastos:g,reserva:Math.round(r.reserva*100)/100,reparto:r.rep,regla:state.cfg.modo,pagado:false,nota:$("#inNota").value.trim()});
+  $("#inMonto").value="";$("#inGastos").value="0";$("#inNota").value="";updatePreview();toast("Cobro registrado")});
+["#inMonto","#inGastos"].forEach(s=>$(s).addEventListener("input",updatePreview));
+$("#simMonto").addEventListener("input",renderSim);
+let propT;
+$("#propPct").addEventListener("input",e=>{const id=e.target.dataset.prop;if(!id)return;
+  state.cfg.propuesta={...state.cfg.propuesta,[id]:+e.target.value||0};
+  clearTimeout(propT);propT=setTimeout(async()=>{if(db){try{await db.doc("config/general").set(state.cfg)}catch(err){toast(errMsg(err))}}
+    const f=document.activeElement?.id;renderPres();if(f)document.getElementById(f)?.focus()},600)});
+$("#modes").addEventListener("change",renderFijo);
+$("#addSocia").addEventListener("click",async()=>{const n=state.cfg.socias.length+1;let id="s"+n;while(state.cfg.socias.some(s=>s.id===id))id="s"+(+id.slice(1)+1);
+  state.cfg.socias.push({id,nombre:"Socia "+n});await saveCfg();toast("Socia agregada")});
+$("#saveCfg").addEventListener("click",async()=>{
+  const c=state.cfg;
+  c.nombre=$("#cfNombre").value.trim(); c.moneda=$("#cfMoneda").value; c.reserva=Math.min(100,Math.max(0,+$("#cfReserva").value||0));
+  c.modo=document.querySelector('input[name=modo]:checked')?.value||"capital";
+  document.querySelectorAll("[data-socia]").forEach(i=>{const s=c.socias.find(x=>x.id===i.dataset.socia);if(s)s.nombre=i.value.trim()||s.nombre});
+  c.fijo={};document.querySelectorAll("[data-fijo]").forEach(i=>c.fijo[i.dataset.fijo]=+i.value||0);
+  if(c.modo==="fijo"){const t=sum(Object.values(c.fijo),x=>x);if(Math.abs(t-100)>0.01){toast(`Los porcentajes suman ${t} %. Deben sumar 100 %.`);return}}
+  document.activeElement?.blur(); if(await saveCfg())toast("Cambios guardados")});
+
+/* ---------- arranque ---------- */
+$("#apFecha").value=$("#gaFecha").value=$("#inFecha").value=$("#fcFecha").value=today();
+function setUploadUI(){const can=!!(db&&assets);document.querySelectorAll(".upl-only").forEach(el=>el.hidden=!can);$("#fcNoUpload").hidden=can||!db;renderFacturas()}
+document.querySelectorAll(".upl-only").forEach(el=>el.hidden=true);
+$("#inPeriodo").value=today().slice(0,7);
+try{const t=localStorage.getItem("tab");if(t)document.querySelector(`#tabs [data-tab="${t}"]`)?.click()}catch(_){}
+renderAll();
+
+(async()=>{
+  try{db=await window.claude?.use?.("db")}catch(_){db=null}
+  if(!db){$("#status").textContent="Sin conexión a la base compartida";$("#status").classList.add("off");
+    $("#banner").innerHTML='<div class="banner" style="margin-top:16px">Esta vista no puede guardar en la base compartida. Lo que registres aquí se perderá al cerrar la página.</div>';return}
+  $("#status").textContent="Datos compartidos · en línea";
+  db.doc("config/general").onSnapshot(s=>{if(s.exists){state.cfg={...structuredClone(DEF_CFG),...structuredClone(s.data())}}renderAll()},()=>{});
+  try{assets=await window.claude.use("assets")}catch(_){assets=null}
+  setUploadUI();
+  ["aportes","gastos","ingresos","presupuesto","facturas"].forEach(col=>{
+    db.collection(col).onSnapshot(s=>{state[col]=s.docs.map(d=>({id:d.id,...d.data()}));renderAll()},
+      e=>{if(e.code==="revoked"){$("#status").textContent="Acceso retirado";$("#status").classList.add("off")}});
+  });
+})();
+})();
+</script>
+<script>
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {})); }
+</script>
+</body>
+</html>
