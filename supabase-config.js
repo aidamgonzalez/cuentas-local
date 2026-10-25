@@ -1,3 +1,3 @@
-// Datos de tu proyecto de Supabase (Project Settings → API)
-window.SUPABASE_URL = "PEGA_AQUI_LA_PROJECT_URL";
-window.SUPABASE_ANON_KEY = "PEGA_AQUI_LA_CLAVE_PUBLISHABLE";
+// Datos del proyecto de Supabase (el mismo del sistema de hospedaje; las tablas de esta app empiezan por inv_)
+window.SUPABASE_URL = "https://ywhekgottommfqqsnpcl.supabase.co";
+window.SUPABASE_ANON_KEY = "sb_publishable_zQ8CjKSokeO7pmRABpN1bw_-OiFBRvF";

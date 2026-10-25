@@ -7,11 +7,13 @@ App para llevar la inversión en el local comercial de Aida y Maria: presupuesto
 
 ## Puesta en marcha
 
-1. Crea un proyecto en [Supabase](https://supabase.com).
+La app usa el mismo proyecto de Supabase del sistema de hospedaje. Sus tablas empiezan por `inv_` y sus facturas van en la carpeta `inv-facturas`, así que no se mezclan con hospedaje.
+
+1. En Supabase, abre el proyecto de hospedaje.
 2. En **SQL Editor → New query**, pega todo `supabase.sql` y toca **Run**.
-3. En **Authentication → Sign In / Providers → Email**, desactiva **Confirm email**.
-4. En **Authentication → URL Configuration**, pon como **Site URL** `https://aidamgonzalez.github.io/cuentas-local/` y agrégala también en **Redirect URLs**.
-5. Copia la **Project URL** y la clave **publishable** (Project Settings → API) en `supabase-config.js`.
+3. En **Authentication → URL Configuration → Redirect URLs**, agrega `https://aidamgonzalez.github.io/cuentas-local/` (no cambies la Site URL).
+4. Revisa que en **Authentication → Sign In / Providers → Email** esté desactivado **Confirm email**.
+5. `supabase-config.js` ya tiene la Project URL y la clave publishable de ese proyecto.
 6. En GitHub: **Settings → Pages → Deploy from a branch → main / (root)**.
 7. Abre la app, toca **Primera vez: crear mi clave** con tu correo y entra.
 8. En **Socias y reglas → Respaldo → Importar respaldo**, carga el archivo `.json` de respaldo.
